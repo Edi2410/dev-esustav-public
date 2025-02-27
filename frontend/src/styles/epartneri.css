@@ -1,0 +1,14 @@
+.topLevel {
+  display: flex;
+  height: 30px;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 2% 20px 2%;
+}
+
+.ant-collapse-item > .ant-collapse-header {
+  background-color: #c5272f;
+  color: white !important;
+  font-weight: 800;
+}

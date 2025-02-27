@@ -1,0 +1,22 @@
+.radioButton {
+  width: 20%;
+  height: 58px !important;
+  font-size: 20px !important;
+  font-weight: bold;
+  margin: auto !important;
+  line-height: 58px !important;
+}
+
+.ant-tabs-tab {
+  background-color: white !important;
+}
+
+.ant-tabs-nav {
+  margin: 0 !important;
+}
+
+.containerShadowSuprachCard {
+  border-radius: 5px;
+  box-shadow: 2px 2px 3px #c3272e;
+  background-color: white;
+}

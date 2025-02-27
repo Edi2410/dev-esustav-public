@@ -1,0 +1,45 @@
+.ant-menu-item-group-title {
+  background-color: #c3272e;
+  font-weight: bolder;
+  opacity: 1;
+  color: black !important;
+}
+
+.menuItem {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.menuItem > span {
+  margin-left: 5px;
+}
+
+.segmented {
+  display: flex;
+  background-color: transparent;
+}
+
+.ant-segmented-group {
+  justify-content: center;
+}
+
+.ant-segmented .ant-segmented-item-selected {
+  background: white;
+  color: black;
+  box-shadow: 1px 1px 2px #c3272e;
+}
+.ant-segmented .ant-segmented-item-selected :hover {
+  background: white;
+  color: black;
+  box-shadow: 1px 1px 2px #c3272e;
+}
+
+.ant-segmented-item {
+  color: white;
+}
+
+.ant-segmented-item :hover {
+  color: white;
+}

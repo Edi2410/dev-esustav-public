@@ -1,0 +1,32 @@
+.layoutHome {
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  padding-left: 2%;
+  padding-right: 2%;
+}
+.content {
+  margin: 2% 40px;
+}
+
+.container h3 {
+  text-align: start;
+  margin-top: 16px !important;
+}
+
+.unosSati:hover {
+  transform: translate(0px, 0px) scale(1.05, 1.05);
+  overflow: auto;
+}
+.unosIzostanaka:hover {
+  transform: translate(0px, 0px) scale(1.05, 1.05);
+  overflow: auto;
+}
+.unosRezervacije:hover {
+  transform: translate(0px, 0px) scale(1.05, 1.05);
+  overflow: auto;
+}
+.unosOpreme:hover {
+  transform: translate(0px, 0px) scale(1.05, 1.05);
+  overflow: auto;
+}

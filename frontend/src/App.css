@@ -1,0 +1,62 @@
+.App {
+  text-align: center;
+  height: 100%;
+  padding: 0;
+}
+
+.headerButton {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2%;
+  color: white;
+}
+
+.homeLayout {
+  min-height: 100%;
+  overflow: auto;
+}
+
+.homeFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  color: white;
+  width: 100%;
+  padding: 0 2%;
+  background-color: #c5272f;
+}
+
+.footerColumn {
+  flex: 1;
+}
+
+.footerSize {
+  margin-bottom: 50px;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: black;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #c5272f;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #8b181d;
+}
