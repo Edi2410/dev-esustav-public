@@ -84,7 +84,7 @@ class UniversalCertificateRequirementsView(viewsets.ModelViewSet):
             ErrorLogs.objects.create(error=str(e), user=self.request.user)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    @action(methods=["POST"], detail=False, url_path="suprach-1-all-true")
+    @action(methods=["POST"], detail=False, url_path="set-all-true-for-suprach1")
     def set_all_true_for_suprach1(self, request):
         try:
             academic_year = AcademicYear.objects.get(active=True)
@@ -97,7 +97,7 @@ class UniversalCertificateRequirementsView(viewsets.ModelViewSet):
             ErrorLogs.objects.create(error=str(e), user=self.request.user)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    @action(methods=["POST"], detail=False, url_path="suprach-2-all-true")
+    @action(methods=["POST"], detail=False, url_path="set-all-true-for-suprach2")
     def set_all_true_for_suprach2(self, request):
         try:
             academic_year = AcademicYear.objects.get(active=True)
@@ -110,7 +110,7 @@ class UniversalCertificateRequirementsView(viewsets.ModelViewSet):
             ErrorLogs.objects.create(error=str(e), user=self.request.user)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    @action(methods=["POST"], detail=False, url_path="zivotopis-all-true")
+    @action(methods=["POST"], detail=False, url_path="set-all-true-for-zivotopis")
     def set_all_true_for_zivotopis(self, request):
         try:
             academic_year = AcademicYear.objects.get(active=True)
@@ -123,7 +123,7 @@ class UniversalCertificateRequirementsView(viewsets.ModelViewSet):
             ErrorLogs.objects.create(error=str(e), user=self.request.user)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    @action(methods=["POST"], detail=False, url_path="bootcamp-all-true")
+    @action(methods=["POST"], detail=False, url_path="set-all-true-for-bootcamp")
     def set_all_true_for_bootcamp(self, request):
         try:
             academic_year = AcademicYear.objects.get(active=True)

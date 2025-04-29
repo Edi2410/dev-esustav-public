@@ -10,12 +10,12 @@ from .views import (
 )
 
 router = routers.DefaultRouter()
-router.register("clan", ClanCertificateRequirementsView, basename="clan")
+router.register("clan", ClanCertificateRequirementsView, basename="clan" )
 router.register("voditelj", VoditeljCertificateRequirementsView, basename="voditelj")
 router.register(
     "koordinator", KoordinatorCertificateRequirementsView, basename="koordinator"
 )
-router.register("admin", UniversalCertificateRequirementsView, basename="admin")
+router.register("admin", UniversalCertificateRequirementsView, basename="admin", )
 
 urlpatterns = [
     path("", include(router.urls)),

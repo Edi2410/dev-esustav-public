@@ -17,7 +17,7 @@ router.register(
 )
 router.register("elections/up", ElectionsUPView, basename="elections/up")
 router.register("elections/votes", ElectionsVotesView, basename="elections/votes")
-router.register("elections/documents", ElectionsDocumentsView, basename="elections/documents")
+router.register("elections/documents", ElectionsDocumentsView, basename="elections-documents")
 
 
 urlpatterns = [
