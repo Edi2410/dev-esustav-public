@@ -8,3 +8,6 @@ postgres-data
 node_modules
 */__pycache__/*
 backend/settings/__pycache__/settings.cpython-311.pyc
+
+
+db.sqlite3

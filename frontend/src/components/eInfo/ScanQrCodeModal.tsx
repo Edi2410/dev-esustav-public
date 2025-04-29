@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Button, Modal, QRCode, Flex, message } from "antd";
 import { IoQrCodeOutline } from "react-icons/io5";
-import { QrScanner } from "@yudiel/react-qr-scanner";
 import { useUserContext } from "hooks/useUserContext";
 import { useAddUserOnActivity } from "hooks/eaktivnosti-hooks/activity-hooks/useAddUserOnActivity";
 
@@ -67,11 +66,6 @@ const ScanQrCodeModal = () => {
         }}
         destroyOnClose={true}
       >
-        <QrScanner
-          scanDelay={5000}
-          onDecode={saveUserActivity}
-          onError={(error) => console.log(error?.message)}
-        />
       </Modal>
     </>
   );

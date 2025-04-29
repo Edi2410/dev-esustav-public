@@ -4,6 +4,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+
   plugins: [
     react({
       jsxRuntime: "classic",
@@ -16,5 +17,6 @@ export default defineConfig({
     hmr: {
       overlay: false,
     },
+    
   },
 });

@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     "suprach",
     "logs",
     "authentication",
+    "django_db_logger",
 ]
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
@@ -152,12 +153,12 @@ AUTH_USER_MODEL = "estudenti.User"
 DATABASES = {
     # docker POSTGRESs
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": env("DATABASE_NAME"),
-        "USER": env("DATABASE_USER"),
-        "PASSWORD": env("DATABASE_PASSWORD"),
-        "HOST": env("DATABASE_HOST"),
-        "PORT": env("DATABASE_PORT"),
+       "ENGINE": "django.db.backends.postgresql",
+       "NAME": env("DATABASE_NAME"),
+       "USER": env("DATABASE_USER"),
+       "PASSWORD": env("DATABASE_PASSWORD"),
+       "HOST": env("DATABASE_HOST"),
+       "PORT": env("DATABASE_PORT"),
     }
     # LOCAL POSTGRES
     # "default": {
@@ -169,10 +170,10 @@ DATABASES = {
     #     "PORT": "5432",
     # }
     # LOCAL MYSQLITE
-    # "default": {
-    #     "ENGINE": "django.db.backends.sqlite3",
-    #     "NAME": BASE_DIR / "db.sqlite3",
-    # }
+    #  "default": {
+    #       "ENGINE": "django.db.backends.sqlite3",
+    #      "NAME": BASE_DIR / "db.sqlite3",
+    #  }
 }
 
 
@@ -200,10 +201,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
-
 USE_I18N = True
 
+TIME_ZONE = "Europe/Zagreb"
 USE_TZ = True
 
 
@@ -220,3 +220,45 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"
+        },
+        "simple": {"format": "%(levelname)s %(asctime)s %(message)s"},
+    },
+    "handlers": {
+        "console_debug": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+        "console_info": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+        "db_warn": {
+            "level": "WARNING",
+            "class": "django_db_logger.db_log_handler.DatabaseLogHandler",
+        },
+    },
+    "loggers": {
+        "db": {
+            "handlers": ["db_warn"],
+            "level": "DEBUG",
+        },
+        "django": {
+            "handlers": ["console_debug"],
+            "level": "INFO",
+        },
+        "django.request": {
+            "handlers": ["db_warn", "console_info"],
+            "level": "INFO",
+        },
+    },
+}

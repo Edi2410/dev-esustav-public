@@ -8,8 +8,8 @@ export const AxiosProvider = ({
 }: React.PropsWithChildren<unknown>) => {
   const navigate = useNavigate();
   const auth = useMemo(() => {
-    const axios = Axios.create({ baseURL: "https://esustav.estudent.hr/api/" }); //deployed
-    // const axios = Axios.create({ baseURL: "http://127.0.0.1:8000/api/" }); //local
+    // const axios = Axios.create({ baseURL: "https://esustav.estudent.hr/api/" }); //deployed
+    const axios = Axios.create({ baseURL: "http://127.0.0.1:8000/api/" }); //local
     // const axios = Axios.create({ baseURL: "http://127.0.0.1:8700/api/" }); //docker
     let tokenData: string | null = sessionStorage.getItem("accessToken");
 
