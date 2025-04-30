@@ -1,6 +1,6 @@
 from django.db import models
 from estudenti.models import User, AcademicYear, RoleGroups, Teams, VirtualTeams
-
+from django_prometheus.models import ExportModelOperationsMixin
 
 class ActivityType(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
@@ -26,7 +26,7 @@ class ActivityTypeRequirements(models.Model):
         return f"{self.activity_type.name} - {self.academic_year.description} - {self.role_group.name} - {self.value} - percentage: {self.is_percentage} - team_orientation: {self.team_orientation}"
 
 
-class Activity(models.Model):
+class Activity(ExportModelOperationsMixin('activity'), models.Model):
     title = models.CharField(max_length=200, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     date = models.DateField(blank=True, null=True)
@@ -47,7 +47,7 @@ class Activity(models.Model):
         return f"{self.title} - {self.date} - {self.location} - {self.team.name} { '(' + self.virtual_team.short_name +')' if self.virtual_team else ''} - {self.activity_type.name}"
 
 
-class UserActivity(models.Model):
+class UserActivity(ExportModelOperationsMixin('user_activity'), models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE, null=True)
     academic_year = models.ForeignKey(AcademicYear, on_delete=models.CASCADE, null=True)

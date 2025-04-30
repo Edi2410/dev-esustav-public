@@ -10,6 +10,12 @@ from suprach.models import (
     Suprach,
 )
 
+from prometheus_client import Counter
+
+number_of_likes_in_suprach = Counter(
+    'number_likes_in_suprach',
+    'Koliko je korisnika lajkano u suprachu'
+)
 
 class LikesView(viewsets.GenericViewSet):
     queryset = Likes.objects.all()
@@ -18,6 +24,7 @@ class LikesView(viewsets.GenericViewSet):
 
     def create(self, request):
         try:
+            number_of_likes_in_suprach.inc()
             suprach = Suprach.objects.get(active=True)
             data = {
                 "suprach": suprach.id,

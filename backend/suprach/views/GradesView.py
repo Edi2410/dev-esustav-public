@@ -17,7 +17,12 @@ from suprach.models import (
     Suprach,
     SuprachsQuestions,
 )
+from prometheus_client import Counter
 
+number_of_graded_user_in_suprach = Counter(
+    'number_graded_user_in_suprach',
+    'Koliko je korisnika ocjenjeno u suprachu'
+)
 
 class GradesView(viewsets.GenericViewSet):
     queryset = Gradings.objects.all()
@@ -44,6 +49,7 @@ class GradesView(viewsets.GenericViewSet):
 
     def create(self, request):
         try:
+            number_of_graded_user_in_suprach.inc()
             questions_results = request.data.get("questions")
             is_special = request.data.get("special")
             user = User.objects.get(id=request.user.id)
@@ -54,7 +60,8 @@ class GradesView(viewsets.GenericViewSet):
                 )
                 if Gradings.objects.filter(
                     grader=request.user,
-                    suprach=Suprach.objects.get(active=True, grading_active=True),
+                    suprach__is_active=True,
+                    suprach__grading_active=True,
                     special_graded=request.data.get("graded_id"),
                 ).exists():
                     return Response(status=status.HTTP_200_OK)
@@ -62,7 +69,8 @@ class GradesView(viewsets.GenericViewSet):
                 graded_user = User.objects.get(id=request.data.get("graded_id"))
                 if Gradings.objects.filter(
                     grader=request.user,
-                    suprach=Suprach.objects.get(active=True, grading_active=True),
+                    suprach__is_active=True,
+                    suprach__grading_active=True,
                     graded=request.data.get("graded_id"),
                 ).exists():
                     return Response(status=status.HTTP_200_OK)
@@ -98,22 +106,26 @@ class GradesView(viewsets.GenericViewSet):
             if is_special:
                 Comments(
                     special_user=graded_user,
-                    suprach=Suprach.objects.get(active=True, grading_active=True),
+                    suprach__is_active=True,
+                    suprach__grading_active=True,
                     comment=notes,
                 ).save()
                 Gradings(
-                    suprach=Suprach.objects.get(active=True, grading_active=True),
+                    suprach__is_active=True,
+                    suprach__grading_active=True,
                     grader=request.user,
                     special_graded=graded_user,
                 ).save()
             else:
                 Comments(
                     user=graded_user,
-                    suprach=Suprach.objects.get(active=True, grading_active=True),
+                    suprach__is_active=True,
+                    suprach__grading_active=True,
                     comment=notes,
                 ).save()
                 Gradings(
-                    suprach=Suprach.objects.get(active=True, grading_active=True),
+                    suprach__is_active=True,
+                    suprach__grading_active=True,
                     grader=request.user,
                     graded=graded_user,
                 ).save()

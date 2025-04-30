@@ -28,6 +28,7 @@ urlpatterns = [
     path("api/einfo/", include("einfo.urls")),
     path("api/epartneri/", include("epartneri.urls")),
     path("api/suprach/", include("suprach.urls")),
+    path('', include('django_prometheus.urls')),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "api/docs/",
