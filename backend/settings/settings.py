@@ -33,7 +33,7 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = ["esustav.estudent.hr", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["esustav.estudent.hr", "localhost", "127.0.0.1", "host.docker.internal"]
 
 CORS_ALLOWED_ORIGINS = [
     "https://esustav.estudent.hr",
@@ -41,6 +41,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:5173",
     "http://127.0.0.1:3000",
+    "http://localhost:9090",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -49,6 +50,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:5173",
     "http://127.0.0.1:3000",
+    "http://localhost:9090",
 ]
 
 
@@ -76,12 +78,14 @@ INSTALLED_APPS = [
     "suprach",
     "logs",
     "authentication",
+    "django_prometheus",
     "django_db_logger",
 ]
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
 
 MIDDLEWARE = [
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -90,6 +94,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 
 
@@ -153,7 +158,7 @@ AUTH_USER_MODEL = "estudenti.User"
 DATABASES = {
     # docker POSTGRESs
     "default": {
-       "ENGINE": "django.db.backends.postgresql",
+       "ENGINE": "django_prometheus.db.backends.postgresql",
        "NAME": env("DATABASE_NAME"),
        "USER": env("DATABASE_USER"),
        "PASSWORD": env("DATABASE_PASSWORD"),
@@ -162,7 +167,7 @@ DATABASES = {
     }
     # LOCAL POSTGRES
     # "default": {
-    #     "ENGINE": "django.db.backends.postgresql_psycopg2",
+    #     "ENGINE": "django_prometheus.db.backends.postgresql_psycopg2",
     #     "NAME": "esustav",
     #     "USER": "edigraovac",
     #     "PASSWORD": "",
@@ -171,7 +176,7 @@ DATABASES = {
     # }
     # LOCAL MYSQLITE
     #  "default": {
-    #       "ENGINE": "django.db.backends.sqlite3",
+    #       "ENGINE": "django_prometheus.db.backends.sqlite3",
     #      "NAME": BASE_DIR / "db.sqlite3",
     #  }
 }

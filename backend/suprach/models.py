@@ -1,7 +1,7 @@
 from django.db import models
 
 from estudenti.models import AcademicYear, RoleGroups, User
-
+from django_prometheus.models import ExportModelOperationsMixin
 
 # Create your models here.
 class Suprach(models.Model):
@@ -25,7 +25,7 @@ class SpecialPersonForGreade(models.Model):  # svi ocjenjuju
         return f"{self.name} - {self.deleted}"
 
 
-class Comments(models.Model):
+class Comments(ExportModelOperationsMixin('suprach_comments'), models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, blank=True, null=True)
     special_user = models.ForeignKey(
         SpecialPersonForGreade, on_delete=models.DO_NOTHING, blank=True, null=True
@@ -37,7 +37,7 @@ class Comments(models.Model):
         return f"{self.user.email if self.user else self.special_user.name}"
 
 
-class Likes(models.Model):
+class Likes(ExportModelOperationsMixin('suprach_likes'), models.Model):
     grader = models.ForeignKey(
         User, on_delete=models.DO_NOTHING, related_name="grader_user_likes"
     )
@@ -57,7 +57,7 @@ class Likes(models.Model):
         return f"from: {self.grader.email} - to: {self.graded.email if self.graded else self.special_graded.name}"
 
 
-class Gradings(models.Model):
+class Gradings(ExportModelOperationsMixin('suprach_grades'), models.Model):
     suprach = models.ForeignKey(Suprach, on_delete=models.DO_NOTHING)
     grader = models.ForeignKey(
         User, on_delete=models.DO_NOTHING, related_name="grader_user"
@@ -84,7 +84,7 @@ class Questions(models.Model):
         return f"{self.description}"
 
 
-class Scores(models.Model):
+class Scores(ExportModelOperationsMixin('suprach_scores'), models.Model):
     suprach = models.ForeignKey(Suprach, on_delete=models.DO_NOTHING)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, blank=True, null=True)
     special_user = models.ForeignKey(
