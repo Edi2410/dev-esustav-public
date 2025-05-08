@@ -1,29 +1,101 @@
-def requirements_status(user, activity_data, activity_requirements):
-    try:
-        requirements_status = []
-        for activity_requirement in activity_requirements:
-            dict = {}
-            dict["activity_type"] = activity_requirement.activity_type.name
-            dict["role_group"] = activity_requirement.role_group.name
+from django.db.models import Sum
+from eaktivnosti.models import UserActivity
+from estudenti.models import UsersPositions
 
-            user_activity = activity_data.filter(
-                user__id=user.id,
-                activity__activity_type=activity_requirement.activity_type,
+
+def get_user_position(user, academic_year):
+    return UsersPositions.objects.get(user=user, academic_year=academic_year)
+
+
+def get_sastanak_data(requirement, academic_year, request_user, user_position, request_user_position):
+    if user_position.virtual_team:
+        total = (
+            UserActivity.objects.filter(
+                academic_year=academic_year,
+                activity__virtual_team=request_user_position.virtual_team,
+                activity__activity_type=requirement.activity_type,
             )
-            if activity_requirement.activity_type.has_hour:
-                hours_count = 0
-                for activity in user_activity:
-                    hours_count += activity.hours
+            .values("activity")
+            .distinct()
+            .count()
+        )
 
-                dict["value"] = hours_count
-                dict["requirement"] = activity_requirement.value
-            else:
-                dict["value"] = user_activity.count()
-                dict["requirement"] = activity_requirement.value / 100
+        attended = UserActivity.objects.filter(
+            academic_year=academic_year,
+            activity__virtual_team=request_user_position.virtual_team,
+            user=request_user,
+            activity__activity_type=requirement.activity_type,
+        ).count()
+    else:
+        total = (
+            UserActivity.objects.filter(
+                academic_year=academic_year,
+                activity__team=user_position.team,
+                activity__activity_type=requirement.activity_type,
+            )
+            .values("activity")
+            .distinct()
+            .count()
+        )
 
-            dict["team_orientation"] = activity_requirement.team_orientation
-            requirements_status.append(dict)
+        attended = UserActivity.objects.filter(
+            academic_year=academic_year,
+            activity__team=user_position.team,
+            user=request_user,
+            activity__activity_type=requirement.activity_type,
+        ).count()
 
-    except Exception as e:
-        print(e)
-        return False
+    return {
+        "aktivnost": requirement.activity_type.name,
+        "odrzano": total or 0,
+        "prisustvovao": attended or 0,
+        "potrebno": requirement.value,
+        "postotak": requirement.is_percentage,
+    }
+
+
+def get_standiranje_data(requirement, academic_year, request_user, exclude_team=True, user_position=None):
+    queryset = UserActivity.objects.filter(
+        academic_year=academic_year,
+        user=request_user,
+        activity__activity_type=requirement.activity_type,
+    )
+
+    if exclude_team and user_position:
+        queryset = queryset.exclude(activity__team=user_position.team)
+
+    result = queryset.aggregate(total=Sum("hours"))
+
+    return {
+        "aktivnost": requirement.activity_type.name,
+        "potrebno": requirement.value,
+        "prisustvovao": result["total"] or 0,
+        "postotak": requirement.is_percentage,
+    }
+
+
+def get_activity_count_and_hours(requirement, academic_year, request_user):
+    total = (
+        UserActivity.objects.filter(
+            academic_year=academic_year,
+            activity__activity_type=requirement.activity_type,
+        )
+        .values("activity")
+        .distinct()
+        .count()
+    )
+    attended = (
+        UserActivity.objects.filter(
+            academic_year=academic_year,
+            user=request_user,
+            activity__activity_type=requirement.activity_type,
+        ).aggregate(total=Sum("hours"))
+    )
+
+    return {
+        "aktivnost": requirement.activity_type.name,
+        "potrebno": requirement.value,
+        "odrzano": total or 0,
+        "prisustvovao": attended["total"] or 0,
+        "postotak": requirement.is_percentage,
+    }

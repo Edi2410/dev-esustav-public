@@ -21,7 +21,8 @@
       "@pages": ["pages/index.ts"],
       "@components": ["components/index.ts"],
       "@configurations": ["configurations/index.ts"],
-      "@types": ["types/index.ts"]
+      "@types": ["types/index.ts"],
+      "@utils": ["src/utils/index.ts"]
     }
   },
   "include": ["src"],

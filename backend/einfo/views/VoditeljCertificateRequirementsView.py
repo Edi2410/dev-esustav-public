@@ -3,14 +3,20 @@ from eaktivnosti.serializers import IDSerializer
 from enums.ActivityTypeEnums import ActivityTypeEnums
 from einfo.models import CertificateRequirements
 from einfo.serializers import CertificateRequirementsSerializer
-from eaktivnosti.models import UserActivity, ActivityTypeRequirements
-from estudenti.models import AcademicYear, User, UsersPositions
+from eaktivnosti.models import ActivityTypeRequirements
+from estudenti.models import AcademicYear, User
 
 from django.http import JsonResponse
-from django.db.models import Sum
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from einfo.utils import (
+    get_user_position,
+    get_sastanak_data,
+    get_standiranje_data,
+    get_activity_count_and_hours,
+)
 
 
 class VoditeljCertificateRequirementsView(viewsets.GenericViewSet):
@@ -22,146 +28,48 @@ class VoditeljCertificateRequirementsView(viewsets.GenericViewSet):
         try:
             serializer = IDSerializer(data=request.query_params)
             serializer.is_valid(raise_exception=True)
+
             request_user = User.objects.get(id=serializer.data["id"])
             academic_year = AcademicYear.objects.get(active=True)
-            user_position = UsersPositions.objects.get(
-                user=request_user, academic_year=academic_year
-            )
+            user_position = get_user_position(request_user, academic_year)
+
             requirements = ActivityTypeRequirements.objects.filter(
-                academic_year=academic_year, role_group=user_position.role.role_group
+                academic_year=academic_year,
+                role_group=user_position.role.role_group,
             )
+
             return_value = []
+
             for requirement in requirements:
-                if requirement.activity_type.name == ActivityTypeEnums.SASTANAK.value:
+                activity_name = requirement.activity_type.name
 
-                    if user_position.virtual_team != None:
-                        all = (
-                            UserActivity.objects.filter(
-                                academic_year=academic_year,
-                                activity__virtual_team=user_position.virtual_team,
-                                activity__activity_type=requirement.activity_type,
-                            )
-                            .values("activity")
-                            .distinct()
-                            .count()
-                        )
-
-                        users = UserActivity.objects.filter(
-                            academic_year=academic_year,
-                            activity__virtual_team=user_position.virtual_team,
-                            user=request_user,
-                            activity__activity_type=requirement.activity_type,
-                        ).count()
-                    else:
-                        all = (
-                            UserActivity.objects.filter(
-                                academic_year=academic_year,
-                                activity__team=user_position.team,
-                                activity__activity_type=requirement.activity_type,
-                            )
-                            .values("activity")
-                            .distinct()
-                            .count()
-                        )
-
-                        users = UserActivity.objects.filter(
-                            academic_year=academic_year,
-                            activity__team=user_position.team,
-                            user=request_user,
-                            activity__activity_type=requirement.activity_type,
-                        ).count()
-                    return_value.append(
-                        {
-                            "aktivnost": requirement.activity_type.name,
-                            "odrzano": all if all else 0,
-                            "prisustvovao": users if users else 0,
-                            "potrebno": requirement.value,
-                            "postotak": requirement.is_percentage,
-                        }
+                if activity_name == ActivityTypeEnums.SASTANAK.value:
+                    data = get_sastanak_data(
+                        requirement, academic_year, request_user, user_position, user_position
                     )
 
-                if (
-                    requirement.activity_type.name
-                    == ActivityTypeEnums.VIP_SASTANAK.value
-                ):
-
-                    all = (
-                        UserActivity.objects.filter(
-                            academic_year=academic_year,
-                            activity__activity_type=requirement.activity_type,
-                        )
-                        .values("activity")
-                        .distinct()
-                        .count()
+                elif activity_name == ActivityTypeEnums.VIP_SASTANAK.value:
+                    data = get_sastanak_data(
+                        requirement, academic_year, request_user, user_position, user_position
                     )
 
-                    users = UserActivity.objects.filter(
-                        academic_year=academic_year,
-                        user=request_user,
-                        activity__activity_type=requirement.activity_type,
-                    ).count()
-                    return_value.append(
-                        {
-                            "aktivnost": requirement.activity_type.name,
-                            "odrzano": all if all else 0,
-                            "prisustvovao": users if users else 0,
-                            "potrebno": requirement.value,
-                            "postotak": requirement.is_percentage,
-                        }
+                elif activity_name == ActivityTypeEnums.STANDIRANJE.value:
+                    data = get_standiranje_data(
+                        requirement, academic_year, request_user, exclude_team=True, user_position=user_position
                     )
 
-                if (
-                    requirement.activity_type.name
-                    == ActivityTypeEnums.STANDIRANJE.value
-                ):
-                    users = (
-                        UserActivity.objects.filter(
-                            academic_year=academic_year,
-                            user=request_user,
-                            activity__activity_type=requirement.activity_type,
-                        )
-                        .exclude(activity__team=user_position.team)
-                        .aggregate(total=Sum("hours"))
+                elif activity_name == ActivityTypeEnums.PRISTUPNI_STANDIRANJE.value:
+                    data = get_activity_count_and_hours(
+                        requirement, academic_year, request_user
                     )
 
-                    return_value.append(
-                        {
-                            "aktivnost": requirement.activity_type.name,
-                            "potrebno": requirement.value,
-                            "prisustvovao": users["total"] if users["total"] else 0,
-                            "postotak": requirement.is_percentage,
-                        }
-                    )
+                else:
+                    continue  # Preskoči nepoznate aktivnosti
 
-                if (
-                    requirement.activity_type.name
-                    == ActivityTypeEnums.PRISTUPNI_STANDIRANJE.value
-                ):
-                    all = (
-                        UserActivity.objects.filter(
-                            academic_year=academic_year,
-                            activity__activity_type=requirement.activity_type,
-                        )
-                        .values("activity")
-                        .distinct()
-                        .count()
-                    )
-                    users = UserActivity.objects.filter(
-                        academic_year=academic_year,
-                        user=request_user,
-                        activity__activity_type=requirement.activity_type,
-                    ).aggregate(total=Sum("hours"))
+                return_value.append(data)
 
-                    return_value.append(
-                        {
-                            "aktivnost": requirement.activity_type.name,
-                            "potrebno": requirement.value,
-                            "odrzano": all if all else 0,
-                            "prisustvovao": users["total"] if users["total"] else 0,
-                            "postotak": requirement.is_percentage,
-                        }
-                    )
             return JsonResponse(return_value, status=status.HTTP_200_OK, safe=False)
+
         except Exception as e:
             ErrorLogs.objects.create(error=str(e), user=self.request.user)
             return Response(status=status.HTTP_400_BAD_REQUEST)
