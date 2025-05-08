@@ -1,3 +1,4 @@
+from estudenti.auth import check_is_user_admin
 from logs.models import ErrorLogs
 from enums.RolesEnum import RolesEnum
 from rest_framework.decorators import permission_classes, action
@@ -27,10 +28,13 @@ from rest_framework.response import Response
 from rest_framework.decorators import permission_classes
 
 
-@permission_classes([IsAuthenticated])
+#@permission_classes([IsAuthenticated])
+
 class UserView(viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
 
     def list(self, request):
         try:
@@ -47,6 +51,7 @@ class UserView(viewsets.GenericViewSet):
         detail=False,
         url_path="parse",
     )
+    @check_is_user_admin
     def parse_users(self, request):
         try:
             csv_file = request.data.get("CSVfile")
