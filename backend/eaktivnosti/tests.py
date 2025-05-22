@@ -64,8 +64,6 @@ class UserOnActivityViewTest(APITestCase):
         self.user = User.objects.create_user(username='testuser', password='password')
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
-        self.client.force_authenticate(user=self.user)
-        self.client.force_authenticate(user=self.user)
         self.activity = Activity.objects.create(title="Aktivnost", academic_year=None)
         self.user_activity = UserActivity.objects.create(user=self.user, activity=self.activity)
 
@@ -88,8 +86,8 @@ class TeamLeadRecomendationViewTest(APITestCase):
         self.user = User.objects.create_user(username='testuser', password='password')
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
-        self.academic_year = AcademicYear.objects.create(description="2023/2024", active=True,             start_date="2022-09-01",
-            end_date="2023-06-30",)
+        self.academic_year = AcademicYear.objects.create(description="2023/2024", active=True,start_date="2022-09-01",
+            end_date="2023-06-30")
 
     def test_create_team_lead_recomendation(self):
         url = reverse('recomendations-list')

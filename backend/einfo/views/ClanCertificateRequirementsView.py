@@ -18,6 +18,7 @@ class ClanCertificateRequirementsView(viewsets.GenericViewSet):
     serializer_class = CertificateRequirementsSerializer
     permission_classes = [IsAuthenticated]
 
+    
     def list(self, request, pk=None):
         try:
             serializer = IDSerializer(data=request.query_params)
@@ -61,9 +62,11 @@ class ClanCertificateRequirementsView(viewsets.GenericViewSet):
                         current_user_position,
                     )
                     return_value.append(data)
+                
 
             return JsonResponse(return_value, status=status.HTTP_200_OK, safe=False)
 
         except Exception as e:
+            print(e)
             ErrorLogs.objects.create(error=str(e), user=self.request.user)
             return Response(status=status.HTTP_400_BAD_REQUEST)

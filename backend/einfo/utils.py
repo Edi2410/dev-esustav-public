@@ -1,5 +1,5 @@
 from django.db.models import Sum
-from eaktivnosti.models import UserActivity
+from eaktivnosti.models import Activity, UserActivity
 from estudenti.models import UsersPositions
 
 
@@ -99,3 +99,23 @@ def get_activity_count_and_hours(requirement, academic_year, request_user):
         "prisustvovao": attended["total"] or 0,
         "postotak": requirement.is_percentage,
     }
+
+def add_user_activity(user, activity_type, academic_year, team=None, virtual_team=None, date='2024-06-01', hours=0):
+    activity = Activity.objects.create(
+        title="Test",
+        description="Testna aktivnost",
+        date=date,
+        location="Test lokacija",
+        responsible_user=user,          # OVAKO TOČNO!
+        team=team,
+        virtual_team=virtual_team,
+        activity_type=activity_type,
+        academic_year=academic_year,
+    )
+    user_activity = UserActivity.objects.create(
+        user=user,
+        activity=activity,
+        academic_year=academic_year,
+        hours=hours,
+    )
+    return user_activity

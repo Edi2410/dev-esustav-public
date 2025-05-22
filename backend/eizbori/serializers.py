@@ -21,7 +21,7 @@ class CandidateSerializers(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class IDTeamSerializer(serializers.ModelSerializer):
+class IDTeamSerializer(serializers.ModelSerializer):    
     class Meta:
         model = Candidate
         fields = ["team"]
